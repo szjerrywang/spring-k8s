@@ -2,7 +2,10 @@ package com.example.hello_spring_k8s.runner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -16,6 +19,12 @@ import java.util.stream.Stream;
 public class DbChecker implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(DbChecker.class);
 
+    @Value("${db.server.password}")
+    private String dbPassword;
+
+    @Autowired
+    DataSourceProperties dataSourceProperties;
+
     private final JdbcTemplate jdbcTemplate;
 
     public DbChecker(JdbcTemplate jdbcTemplate) {
@@ -24,6 +33,8 @@ public class DbChecker implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        log.info("DB password from env: {}", dbPassword);
+        log.info("DB password setted: {}", dataSourceProperties.getPassword());
         log.info("Creating tables");
 
         jdbcTemplate.execute("DROP TABLE IF EXISTS customers");
